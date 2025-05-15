@@ -1,73 +1,78 @@
 #!/usr/bin/env python
 # /// script
 # dependencies = [
-#     "requests",
+#     "aiohttp",
 # ]
 # ///
 
 # Script to create a mapping between various identifiers for the same pokemon
 
-import requests
-import json
+from asyncio import run, gather
+from itertools import batched
+from json import loads, dump
+from pathlib import Path
+from typing import Any
 
-print("Obtaining pokemon identifiers...")
+from aiohttp import ClientSession
 
-# Grab total number of pokemon species to iterate over
-pokemon_species_endpoint_limited = "https://pokeapi.co/api/v2/pokemon-species"
-pokemon_species_response_limited = requests.get(pokemon_species_endpoint_limited)
-pokemon_species_response_limited_json = pokemon_species_response_limited.json()
-pokemon_species_count = pokemon_species_response_limited_json['count']
 
-# Get all pokemon species
-pokemon_species_endpoint = "https://pokeapi.co/api/v2/pokemon-species?limit=" + str(pokemon_species_count)
-pokemon_species_response = requests.get(pokemon_species_endpoint)
-pokemon_species_response_json = pokemon_species_response.json()
-pokemon_species_results = pokemon_species_response_json['results']
+print('Obtaining pokemon identifiers...')
 
-# For each pokemon species, grab all identifiable names
-pokemon_identifiers = {}
-for pokemon_species_result_idx in range(pokemon_species_count):
 
-    # Obtain each species' response
-    pokemon_species_idx_endpoint = pokemon_species_results[pokemon_species_result_idx]['url']
-    pokemon_species_idx_response = requests.get(pokemon_species_idx_endpoint)
-    pokemon_species_idx_response_json = pokemon_species_idx_response.json()
+async def get(url: str, session: ClientSession) -> dict[str, Any]:
+    async with session.get(url=url) as response:
+        return loads(await response.read())
 
-    # Grab the canonical name for each pokemon species
-    pokemon_species_idx_name = pokemon_species_idx_response_json['name']
 
-    # Grab the id for each pokemon species
-    pokemon_species_idx_id = pokemon_species_idx_response_json['id']
+async def get_names(url: str, session: ClientSession, n: int):
+    out: dict[str, Any] = {}
 
-    # TODO: format this with indentation and overwriting the previous line
-    print(str(pokemon_species_result_idx) + ": " + pokemon_species_idx_name)
+    pokemon = await get(url, session)
+    pokemon_name = pokemon['name']  # Canonical name
 
-    # Add the id as an identifier
-    pokemon_identifiers |= {pokemon_species_idx_id: pokemon_species_idx_name}
+    # "\033[F\033[K" moves to the start of the line, up, and clears the line
+    print(f'\033[F\033[K{n}: {pokemon_name}')
 
-    # Add the canonical name as an identifier
-    pokemon_identifiers |= {pokemon_species_idx_name: pokemon_species_idx_name}
+    out |= {pokemon['id']: pokemon_name,
+            pokemon_name: pokemon_name}
 
-    # Grab the localized names for each pokemon species
-    pokemon_species_idx_names = pokemon_species_idx_response_json['names'][:-1]
-    # The last entry is not a name, hence the `[:-1]`
-    names = pokemon_species_idx_names[:-1]
-    for name_idx in range(len(names)):
-        name = pokemon_species_idx_names[name_idx]['name']
-        name = name.casefold()
-        pokemon_identifiers |= {name: pokemon_species_idx_name}
+    # Localized names
+    out |= {name['name'].casefold(): pokemon_name
+            for name in pokemon['names']}
 
-# TODO get localized form names: once done add to readme
-# Example response: https://pokeapi.co/api/v2/pokemon-form/arceus-fairy
-# Resources: https://github.com/PokeAPI/pokeapi/blob/f3fd16c59edf9defab8be3c24f43cd768747199b/data/v2/csv/pokemon_form_names.csv
-# The only place where complete form names are localized: https://www.pokeos.com/pokedex/585-autumn
-# For forms may have to massage them ourselves i.e. <japanese-pokemon-name>-<japanese-form-name>
-# where the arguments can be requested from the endpoints,
-# but being careful that the translated word of "form" doesn't show up
-# i.e. canonical name: deerling-autumn, jp name: シキジカ-はる (i.e. deerling-autumn) instead of "シキジカ-はるのすがた" (i.e. deerling-autumnform
-pokemon_identifiers |= {"シキジカ-あき": "deerling-autumn"}
+    return out
 
-print("Obtained pokemon identifiers.")
 
-with open("../share/pokemon_identifiers.json", "w") as json_file:
-    json.dump(pokemon_identifiers, json_file, ensure_ascii = False, indent = 2)
+async def main():
+    step = 25
+
+    pokemons_dict: dict[str, str] = {}
+    async with ClientSession() as session:
+        pokemons_count = (await get('https://pokeapi.co/api/v2/pokemon-species', session))['count']
+        pokemons: list[dict[str, Any]] = (await get(f'https://pokeapi.co/api/v2/pokemon-species?limit={pokemons_count}',
+                                                    session))['results']
+
+        for i, batch in enumerate(batched(pokemons, step)):
+            for k in await gather(*(get_names(url['url'], session, i*step+j)
+                                    for j, url in enumerate(batch))):
+                pokemons_dict |= k
+    print(f'Finalized all. Return is a list of len {len(pokemons)} outputs.')
+
+    # TODO get localized form names: once done add to readme
+    # Example response: https://pokeapi.co/api/v2/pokemon-form/arceus-fairy
+    # Resources: https://github.com/PokeAPI/pokeapi/blob/f3fd16c59edf9defab8be3c24f43cd768747199b/data/v2/csv/pokemon_form_names.csv
+    # The only place where complete form names are localized: https://www.pokeos.com/pokedex/585-autumn
+    # For forms may have to massage them ourselves i.e. <japanese-pokemon-name>-<japanese-form-name>
+    # where the arguments can be requested from the endpoints,
+    # but being careful that the translated word of "form" doesn't show up
+    # i.e. canonical name: deerling-autumn, jp name: シキジカ-はる (i.e. deerling-autumn) instead of "シキジカ-はるのすがた" (i.e. deerling-autumnform
+    pokemons_dict |= {"シキジカ-あき": "deerling-autumn"}
+
+    return pokemons_dict
+
+
+print('\nObtained pokemon identifiers.')
+
+with open(Path(__file__).parent.parent/'share/pokemon_identifiers.json',
+          'w', encoding='utf-8') as f:
+    dump(run(main()), f, ensure_ascii=False)

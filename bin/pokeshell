@@ -103,14 +103,14 @@ case "$#" in
 
         # Check if any pokemon listed
         # minor fixme: ||/or the below two if statements
-        if [ $# == 1 ] && [ $last_flag_idx == 1 ]; then
+        if [ $# == 1 ] && [ "$last_flag_idx" == 1 ]; then
             _help
             echo ""
             echo "You forgot to mention any Pokemon! See help."
             exit
         fi
 
-        if [ $# == 2 ] && [ $last_flag_idx == 2 ]; then
+        if [ $# == 2 ] && [ "$last_flag_idx" == 2 ]; then
             _help
             echo ""
             echo "You forgot to mention any Pokemon! See help."
@@ -206,7 +206,7 @@ case "$#" in
             fi
 
             gender_rate=4
-            if [ $true_gender == 1 ]; then
+            if [ "$true_gender" == 1 ]; then
                 # Check if pokemon exists! If not use unown-? lol
                 http_code=$(curl -s -o /dev/null -I -w "%{http_code}" \
                     "https://pokeapi.co/api/v2/pokemon/$pokemon")
@@ -244,7 +244,7 @@ case "$#" in
 
             # meowstic is weird in pokeapi (upstream issue?)
             # convert meowstic-male back to meowstic for the other backends
-            if [ $pokemon == 'meowstic-male' ]; then
+            if [ "$pokemon" == 'meowstic-male' ]; then
                 pokemon=meowstic
                 gender_rate=4
             fi
@@ -259,11 +259,11 @@ case "$#" in
                 fi
             fi
 
-            if [ $shiny_str = 'shiny' ] || [ $shiny_str = 's' ] || [ $shiny_str = '✨' ]; then
+            if [ "$shiny_str" = 'shiny' ] || [ "$shiny_str" = 's' ] || [ "$shiny_str" = '✨' ]; then
                 _type=shiny
-            elif [ $shiny_str = 'not-shiny' ] || [ $shiny_str = 'ns' ]; then
+            elif [ "$shiny_str" = 'not-shiny' ] || [ "$shiny_str" = 'ns' ]; then
                 _type=not-shiny
-            elif [ $shiny_str = 'all' ]; then
+            elif [ "$shiny_str" = 'all' ]; then
                 # After expanding all shiny options for this pokemon, continue to next iteration
                 not_shiny_desc="not-shiny:${pokemon}+${gender_str}"
                 shiny_desc="shiny:${pokemon}+${gender_str}"
@@ -293,9 +293,9 @@ case "$#" in
                 fi
             fi
 
-            if [ $gender_str = 'male' ] || [ $gender_str = 'm' ] || [ $gender_str = '♂' ]; then
+            if [ "$gender_str" = 'male' ] || [ "$gender_str" = 'm' ] || [ "$gender_str" = '♂' ]; then
                 if [ "$gender_rate" = '8' ]; then
-                    if [ $is_random = 0 ]; then
+                    if [ "$is_random" = 0 ]; then
                         echo "$pokemon must be female!"
                         echo ""
                         exit
@@ -303,7 +303,7 @@ case "$#" in
                         gender=female
                     fi
                 elif [ "$gender_rate" = '-1' ]; then
-                    if [ $is_random = 0 ]; then
+                    if [ "$is_random" = 0 ]; then
                         echo "$pokemon has no gender!"
                         echo ""
                         exit
@@ -313,17 +313,17 @@ case "$#" in
                 else
                     gender=male
                 fi
-            elif [ $gender_str = 'female' ] || [ $gender_str = 'f' ] || [ $gender_str = '♀' ]; then
-                if [ $gender_rate = '0' ]; then
-                    if [ $is_random = 0 ]; then
+            elif [ "$gender_str" = 'female' ] || [ "$gender_str" = 'f' ] || [ "$gender_str" = '♀' ]; then
+                if [ "$gender_rate" = '0' ]; then
+                    if [ "$is_random" = 0 ]; then
                         echo "$pokemon must be male!"
                         echo ""
                         exit
                     else
                         gender=male
                     fi
-                elif [ $gender_rate = '-1' ]; then
-                    if [ $is_random = 0 ]; then
+                elif [ "$gender_rate" = '-1' ]; then
+                    if [ "$is_random" = 0 ]; then
                         echo "$pokemon has no gender!"
                         echo ""
                         exit
@@ -334,8 +334,8 @@ case "$#" in
                 else
                     gender=female
                 fi
-            elif [ $gender_str = 'genderless' ]; then
-                if [ $gender_rate != '-1' ]; then
+            elif [ "$gender_str" = 'genderless' ]; then
+                if [ "$gender_rate" != '-1' ]; then
                     echo "$pokemon_species cannot be genderless!"
                     echo ""
                     exit
@@ -343,9 +343,9 @@ case "$#" in
                     # use default gender of male
                     gender=male
                 fi
-            elif [ $gender_str = 'all' ]; then
+            elif [ "$gender_str" = 'all' ]; then
                 # After expanding all gender options for this pokemon, continue to next iteration
-                if [ $gender_rate = '0' ]; then
+                if [ "$gender_rate" = '0' ]; then
                     desc="${shiny_str}:${pokemon}+male"
                     descriptions=("${desc}" "${descriptions[@]}")
                 elif [ "$gender_rate" = '8' ]; then
@@ -380,9 +380,9 @@ case "$#" in
 
             # Check if image is cached
             is_cached=0
-            if [ $use_small == 1 ]; then
+            if [ "$use_small" == 1 ]; then
                 possible_cached_pokemon="$cache_dir/$desc_full-small.png"
-            elif [ $use_ani == 1 ]; then
+            elif [ "$use_ani" == 1 ]; then
                 possible_cached_pokemon="$cache_dir/$desc_full.gif"
             else
                 possible_cached_pokemon="$cache_dir/$desc_full-big.png"
@@ -394,16 +394,16 @@ case "$#" in
             fi
 
             # curl images
-            if [ $use_small == 1 ] && [ "$is_cached" == 0 ]; then
+            if [ "$use_small" == 1 ] && [ "$is_cached" == 0 ]; then
                 # default type of small sprites is "regular"
-                if [ $_type = 'not-shiny' ]; then
+                if [ "$_type" = 'not-shiny' ]; then
                     _type=regular
                 fi
-                if [ $gender = 'male' ]; then
+                if [ "$gender" = 'male' ]; then
                     gender=''
                 fi
 
-                if [ $pokemon = 'nidoran-f' ]; then
+                if [ "$pokemon" = 'nidoran-f' ]; then
                     gender=''
                 fi
 
@@ -420,9 +420,9 @@ case "$#" in
                 curl -sL \
                     "https://raw.githubusercontent.com/msikma/pokesprite/master/pokemon-gen8/$_type/$gender/$pokemon.png" \
                     -o "$image"
-            elif [ $use_ani == 1 ] && [ "$is_cached" == 0 ]; then
+            elif [ "$use_ani" == 1 ] && [ "$is_cached" == 0 ]; then
                 # default type of ani sprites is "normal"
-                if [ $_type = 'not-shiny' ]; then
+                if [ "$_type" = 'not-shiny' ]; then
                     _type=normal
                 fi
 
@@ -456,7 +456,7 @@ case "$#" in
                 curl -sL \
                     "https://projectpokemon.org/images/$_type-sprite/$pokemon$gender.gif" \
                     -o "$image"
-            elif [ ${is_cached} == 0 ]; then
+            elif [ "${is_cached}" == 0 ]; then
                 # default type of big sprites is "default"
                 if [ "$_type" = 'not-shiny' ] && [ "$gender" != 'female' ]; then
                     _desc=default
@@ -472,7 +472,7 @@ case "$#" in
 
                 # meowstic is weird in pokeapi (upstream issue?)
                 # male shiny is actually female shiny?
-                if [ $pokemon == 'meowstic' ]; then
+                if [ "$pokemon" == 'meowstic' ]; then
                     pokemon=meowstic-male
                 fi
 

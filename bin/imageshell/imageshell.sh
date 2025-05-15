@@ -31,7 +31,7 @@ function imgshl_stitch_images () {
         # tiff is faster than png to create and higher quality than jpg
         display_file="$cache_dir/t.tiff"
 
-        if [ $scale == 1 ]; then
+        if [ "$scale" == 1 ]; then
             # Get scale height to resize all images to
             max_height=2160
             for _i in "${_images[@]}"; do
@@ -46,7 +46,7 @@ function imgshl_stitch_images () {
             scale_height=$max_height
             (( max_height > terminal_height )) && scale_height=$terminal_height
 
-            if [ $trim == 1 ]; then
+            if [ "$trim" == 1 ]; then
                 # Trim, scale, and stitch
                 magick "${_images[@]}" -trim -scale x"${scale_height}" +append "${display_file}"
             else
@@ -56,7 +56,7 @@ function imgshl_stitch_images () {
 
         else
             # Stitch
-            if [ $trim == 1 ]; then
+            if [ "$trim" == 1 ]; then
                 # Specify file to be displayed as png
                 # hack for pokeshell, because chafa doesn't like pokeshell tiff images
                 # at small image sizes png vs tiff doesn't cause any noticeable slowdown anyway
@@ -70,7 +70,7 @@ function imgshl_stitch_images () {
             fi
         fi
     else
-        if [ $trim == 1 ]; then
+        if [ "$trim" == 1 ]; then
             magick "${_images[0]}" -trim "${_images[0]}"
         fi
 
@@ -85,7 +85,7 @@ function imgshl_display_image () {
     display_file=${1:?}
     pixel_perfect=${2:?}
 
-    if [ $pixel_perfect == 1 ]; then
+    if [ "$pixel_perfect" == 1 ]; then
         if type timg >/dev/null 2>/dev/null; then
             timg -b none "${display_file}"
         else
@@ -125,7 +125,7 @@ function imgshl_stitch_ani_images () {
     cache_dir=${4:?}
 
     if [ ${#_images[@]} != 1 ]; then
-        if [ $scale == 1 ]; then
+        if [ "$scale" == 1 ]; then
             # Get scale height to resize all images to
             max_height=2160
             for _i in "${_images[@]}"; do
@@ -261,7 +261,7 @@ function imgshl_display () {
     cache_dir=${7:?}
 
     # Stitch images and display
-    if [ $use_ani == 0 ]; then
+    if [ "$use_ani" == 0 ]; then
         imgshl_stitch_images __images $scale $trim $cache_dir
         imgshl_display_image "$display_file" $pixel_perfect
         imgshl_cleanup __images $cache $cache_dir
