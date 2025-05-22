@@ -15,12 +15,12 @@
 # https://stackoverflow.com/a/33777659
 
 function imgshl_stitch_images () {
-    local -n _images
+    local -n _images=${1:?}
     local scale
     local trim
     local cache_dir
 
-    _images=${1:?}
+    #_images=${1:?}
     scale=${2:?}
     trim=${3:?}
     cache_dir=${4:?}
@@ -97,11 +97,11 @@ function imgshl_display_image () {
 }
 
 function imgshl_cleanup () {
-    local -n _images
+    local -n _images=${1:?}
     local cache
     local cache_dir
 
-    _images=${1:?}
+    #_images=${1:?}
     cache=${2:?}
     cache_dir=${3:?}
 
@@ -114,12 +114,12 @@ function imgshl_cleanup () {
 }
 
 function imgshl_stitch_ani_images () {
-    local -n _images
+    local -n _images=${1:?}
     local scale
     local cache
     local cache_dir
 
-    _images=${1:?}
+    #_images=${1:?}
     scale=${2:?}
     cache=${3:?}
     cache_dir=${4:?}
@@ -189,7 +189,7 @@ function imgshl_stitch_ani_images () {
                 extra_frames=$(( frame - specified_frame ))
                 extra_idx_del_str=""
 
-                for (( _extra_num=0; _extra_num<extra_frames; _extra_num++ )); do
+		for _extra_num in {0...$(( $extra_frames - 1 ))}; do
                     idx=$(( _extra_num * frame / extra_frames ))
                     extra_idx_del_str="$extra_idx_del_str$idx,"
                 done
@@ -199,7 +199,7 @@ function imgshl_stitch_ani_images () {
                 # Insert extra frames into gif
                 extra_frames=$(( specified_frame - frame ))
 
-                for (( _extra_num=0; _extra_num<extra_frames; _extra_num++ )); do
+		for _extra_num in {0...$(( $extra_frames - 1 ))}; do
                     idx=$(( _extra_num * frame / extra_frames + _extra_num ))
                     magick "${_images[_loop_num]/%/s}" "${_images[_loop_num]/%/s}[$idx]" -insert $idx "${_images[_loop_num]/%/s}"
                 done
@@ -244,7 +244,7 @@ function imgshl_display_ani_image () {
 }
 
 function imgshl_display () {
-    local -n __images
+    local -n __images=${1:?}
     local use_ani
     local scale
     local trim
@@ -252,7 +252,7 @@ function imgshl_display () {
     local cache
     local cache_dir
 
-    __images=${1:?}
+    #__images=${1:?}
     use_ani=${2:?}
     scale=${3:?}
     trim=${4:?}
