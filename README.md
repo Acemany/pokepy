@@ -1,5 +1,5 @@
-# pokeshell
-A shell program to show pokemon sprites in the terminal.
+# pokepy
+A Python script to show pokemon sprites in the terminal.
 
 ![pokeshell4](https://user-images.githubusercontent.com/17132214/157562228-6ee73b46-9287-45de-823b-e7c43001b00e.gif)
 
@@ -15,13 +15,13 @@ Key features include:
 
 ## Installation
 
-You can install/uninstall pokeshell using [`just`](https://github.com/casey/just).
+You can install/uninstall pokepy using [`just`](https://github.com/casey/just).
 
-By default the install directory is `/usr/local/`, which will allow you to run `pokeshell`
+By default the install directory is `/usr/local/`, which will allow you to run `pokepy`
 anywhere on your system as well as add shell completions.
 
 You can also specify the install directory, but you'll have to make sure that directory is on your `$PATH`
-if you want to run `pokeshell` from anywhere.
+if you want to run `pokepy` from anywhere.
 
 ```bash
 # install
@@ -43,22 +43,22 @@ If you don't have `just` or don't want to use it, you can directly use the `inst
 
 Remember to prepend the install/uninstall command with `sudo` if you need to.
 
-If you do not want to install then you can still run pokeshell anywhere
+If you do not want to install then you can still run pokepy anywhere
 by adding the following lines to your `~/.bashrc`.
 
 ```bash
-export PATH=/path/to/pokeshell:$PATH
+export PATH=/path/to/pokepy:$PATH
 ```
 
 ## Usage
 
 ```bash
-pokeshell --help
+pokepy --help
 ```
 
 or if running from this directory:
 ```bash
-./bin/pokeshell --help
+./bin/pokepy --help
 ```
 
 ## Examples
@@ -75,18 +75,18 @@ has fixes for properly displaying ascii. The updated `neofetch` can be run
 with the [`neowofetch`](https://github.com/hykilpikonna/hyfetch#running-updated-original-neofetch)
 command and uses your existing `neofetch` config.
 
-To use `pokeshell` with `hyfetch` add the following to your `neofetch`
+To use `pokepy` with `hyfetch` add the following to your `neofetch`
 config file: `~/.config/neofetch/config`:
 ```
 image_backend="ascii"
-image_source=$(POKESHELL_COMMAND)
+image_source=$(POKEPY_COMMAND)
 ```
-where `POKESHELL_COMMAND` is what you would run in the terminal.
+where `POKEPY_COMMAND` is what you would run in the terminal.
 
 For example, including the below in your `neofetch` config file
 ```
 image_backend="ascii"
-image_source=$(pokeshell politoed)
+image_source=$(pokepy politoed)
 ```
 and running `neowofetch` gives the following:
 
@@ -94,7 +94,7 @@ and running `neowofetch` gives the following:
 
 ## Sources
 A great amount of gratitude goes to the following projects, without which
-`pokeshell` would not be possible. Please star/support these sources!
+`pokepy` would not be possible. Please star/support these sources!
 
 Small sprites: [msikma/pokesprite](https://github.com/msikma/pokesprite)
 
@@ -104,34 +104,34 @@ Big sprites and localization: [PokeAPI](https://pokeapi.co/)
 Animated sprites: [ProjectPokemon](https://projectpokemon.org/home/docs/spriteindex_148)
 
 ## Similar Projects
-pokeshell is not the first player in the pokemon shell art niche and nor will it
+pokepy is a fork of a pokeshell, and pokeshell is not the first player in the pokemon shell art niche and nor will it
 be the last. (I just hope that the next project can take these ideas and only
 expand on them.) Below is a feature list of some projects (
 [acxz/pokescript](https://github.com/acxz/pokescript),
 [phoneybadger/pokemon-colorscripts](https://gitlab.com/phoneybadger/pokemon-colorscripts),
 [talwat/pokeget-rs](https://github.com/talwat/pokeget-rs))
-that also fill this role and what makes `pokeshell` unique among them.
+that also fill this role and what makes `pokepy`/`pokeshell` unique among them.
 
-| **Feature**      | **pokeshell** | **pokescript** | **colorscripts** | **pokeget-rs** |
-|:----------------:|:-------------:|:--------------:|:----------------:|:--------------:|
-| random           | ✔️             | ✔️              | ✔️                | ✔️              |
-| small            | ✔️             | ✔️              | ✔️                | ✔️              |
-| big              | ✔️             | ❌             | ❌               | ❌             |
-| animated         | ✔️             | ❌             | ❌               | ❌             |
-| terminal fit     | ✔️             | ❌             | ❌               | ❌             |
-| multilingual     | ✔️             | ✔️              | ❌               | ❌             |
-| genders          | ✔️             | ✔️              | ❌               | ❌             |
-| tab completion   | ✔️             | ✔️              | ❌               | ❌             |
-| multiple pokemon | ✔️             | ✔️              | ❌               | ✔️              |
-| no internet      | ❌            | ✔️              | ✔️                | ✔️              |
-| block size <sup>#</sup>      | ANSI          | half         | half         | half          |
-| # dependencies <sup>-</sup>  | 5             | 1            | 1            | 0             |
-| cached speed <sup>+</sup>    | 1x (76.9 ms)  | 11x (7.1 ms) | 2x (37.5 ms) | 37x  (2.1 ms) |
-| first run speed <sup>+</sup> | 1x (241.2 ms) | 34x (7.1 ms) | 6x (37.5 ms) | 115x (2.1 ms) |
+| **Feature**                  | **pokeshell** | **pokescript** | **colorscripts** | **pokeget-rs** |
+|:----------------------------:|:-------------:|:--------------:|:----------------:|:--------------:|
+| random                       | ✔️            | ✔️             | ✔️               | ✔️             |
+| small                        | ✔️            | ✔️             | ✔️               | ✔️             |
+| big                          | ✔️            | ❌             | ❌               | ❌             |
+| animated                     | ✔️            | ❌             | ❌               | ❌             |
+| terminal fit                 | ✔️            | ❌             | ❌               | ❌             |
+| multilingual                 | ✔️            | ✔️             | ❌               | ❌             |
+| genders                      | ✔️            | ✔️             | ❌               | ❌             |
+| tab completion               | ✔️            | ✔️             | ❌               | ❌             |
+| multiple pokemon             | ✔️            | ✔️             | ❌               | ✔️             |
+| no internet                  | ❌            | ✔️             | ✔️               | ✔️             |
+| block size <sup>#</sup>      | ANSI          | half           | half             | half           |
+| # dependencies <sup>-</sup>  | 5             | 1              | 1                | 0              |
+| cached speed <sup>+</sup>    | 1x (76.9 ms)  | 11x (7.1 ms)   | 2x (37.5 ms)     | 37x  (2.1 ms)  |
+| first run speed <sup>+</sup> | 1x (241.2 ms) | 34x (7.1 ms)   | 6x (37.5 ms)     | 115x (2.1 ms)  |
 
 <sup>#</sup>: in order of resolution: ANSI > half
 
-<sup>-</sup>: pokeshell/pokescript uses bash, colorscripts uses python, pokeget-rs uses rust
+<sup>-</sup>: pokepy/colorscripts uses python, pokeshell/pokescript uses bash, pokeget-rs uses rust
 
 <sup>+</sup>: Normalized to pokeshell, tested with [hyperfine](https://github.com/sharkdp/hyperfine), larger
 is faster
